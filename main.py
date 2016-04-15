@@ -34,13 +34,26 @@ def webhook():
 
         for event in messaging_events:
             if "message" in event:
-                logging.info(event["message"]["text"])
-                response = "Echo response : " + event["message"]["text"]
-                r = messenger_tools.send_message(event["sender"], response)
-                if r.status_code != 200:
-                    logging.error(r.text)
-                else:
-                    logging.info("Message sent")
+                if "text" in event["message"]:
+                    messageReceived = event["message"]["text"]
+                    logging.info("Message received : "+messageReceived)
+
+                    if messageReceived == "Generic":
+                        r = messenger_tools.sendGenericMessage(event["sender"])
+                        if r.status_code != 200:
+                            logging.error(r.text)
+                        else:
+                            logging.info("Message sent")
+                    else:
+                        response = "Echo response : " + event["message"]["text"]
+                        r = messenger_tools.send_message(event["sender"], response)
+                        if r.status_code != 200:
+                            logging.error(r.text)
+                        else:
+                            logging.info("Message sent")
+
+
+
         return "coco"
 
     #Verify
