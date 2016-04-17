@@ -6,6 +6,7 @@ import messenger_tools
 import config
 import model_sql
 import const
+import requests
 
 
 app = Flask(__name__)
@@ -29,6 +30,25 @@ def hello():
     """Return a friendly HTTP greeting."""
     return 'Hello World!'
 
+
+@app.route('/setwelcomemessage')
+def setWelcomeMessage():
+    request_url  = 'https://graph.facebook.com/v2.6/'+str(const.PAGE_ID)+'/thread_settings?access_token='+const.PAGE_ACCESS_TOKEN
+    json_payload = {
+    	"setting_type": "call_to_actions",
+    	"thread_state": "new_thread",
+    	"call_to_actions": [{
+    		"message": {
+    			"text": "Bienvenue dans le bot test d'Adrien :D"
+    		}
+    	}]
+    }
+    r = requests.post(
+        request_url,
+        json = json_payload)
+    return r.text
+
+
 @app.route('/sendmessage/<iduser>/<message>')
 def sendMessage(iduser,message):
     iduser = const.adrien_facebook_id
@@ -37,7 +57,7 @@ def sendMessage(iduser,message):
         logging.error(r.text)
     else:
         logging.info("Message sent")
-    return 'Message "'+message+'" sent to the user '+iduser
+    return 'Message "'+message+'" sent to the user '+str(iduser)
 
 
 @app.route('/webhook', methods=['GET', 'POST'])
